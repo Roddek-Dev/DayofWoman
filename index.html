@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flappy Frog</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: url(fondo.jpg) no-repeat center/cover;
+        overflow: hidden;
+      }
+      canvas {
+        background: transparent;
+      }
+      .game-over {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      }
+      .game-over h2 {
+        color: #ff69b4; /* Rosa */
+      }
+      .game-over p {
+        color: #008000; /* Verde */
+        font-size: 18px;
+      }
+      .btn-custom {
+        background-color: #ff69b4;
+        color: white;
+        border: none;
+      }
+      .btn-custom:hover {
+        background-color: #d85799;
+        color: darkorchid;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div class="game-over p-4 text-center" id="gameOverScreen">
+      <h2>¡Eres mi bug favorito! 🐸</h2>
+      <p>Nunca quisiera corregirte ❤️</p>
+      <button class="btn btn-custom" onclick="location.reload()">
+        Reintentar
+      </button>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function ajustarCanvas() {
+        canvas.width = window.innerWidth * 0.6;
+        canvas.height = window.innerHeight * 0.8;
+      }
+      window.addEventListener("resize", ajustarCanvas);
+      ajustarCanvas();
+
+      const frog = {
+        x: 50,
+        y: canvas.height / 2,
+        width: 60, // Antes era 30, ahora es el doble
+        height: 60, // Antes era 30, ahora es el doble
+        velocity: 0,
+        gravity: 0.5,
+        jump: -10,
+      };
+
+      let pipes = [];
+      let frame = 0;
+      let score = 0;
+      let gameOver = false;
+      let passedPipes = 0;
+
+      const pipeImg = new Image();
+      pipeImg.src = "texturaObstaculo.jpg";
+
+      const frogImg = new Image();
+      frogImg.src = "frog.png"; // Asegúrate de que la imagen esté en la misma carpeta o usa una ruta válida
+
+      function drawFrog() {
+        ctx.drawImage(frogImg, frog.x, frog.y, frog.width, frog.height);
+      }
+
+      function drawPipes() {
+        pipes.forEach((pipe) => {
+          ctx.drawImage(pipeImg, pipe.x, pipe.y, pipe.width, pipe.height);
+        });
+      }
+
+      function generarObstaculos() {
+        let pipeWidth = canvas.width * 0.2;
+        let gapSize = canvas.height * 0.3; // Espacio entre obstáculos
+
+        let gapPosition = Math.random() * (canvas.height - gapSize - 100) + 50;
+
+        pipes.push(
+          { x: canvas.width, y: 0, width: pipeWidth, height: gapPosition },
+          {
+            x: canvas.width,
+            y: gapPosition + gapSize,
+            width: pipeWidth,
+            height: canvas.height - (gapPosition + gapSize),
+          }
+        );
+      }
+
+      function updateGame() {
+        if (gameOver) return;
+
+        // Aplicar gravedad
+        frog.velocity += frog.gravity;
+        frog.y += frog.velocity;
+
+        // Evitar que la rana salga de la pantalla
+        if (frog.y + frog.height >= canvas.height || frog.y <= 0) {
+          endGame();
+        }
+
+        // Generar obstáculos cada 90 frames
+        if (frame % 90 === 0) {
+          generarObstaculos();
+        }
+
+        // Mover obstáculos y verificar colisiones
+        pipes = pipes.filter((pipe) => {
+          pipe.x -= Math.max(canvas.width * 0.007, 2);
+
+          // Verificar colisión con la rana
+          if (
+            frog.x < pipe.x + pipe.width &&
+            frog.x + frog.width > pipe.x &&
+            frog.y < pipe.y + pipe.height &&
+            frog.y + frog.height > pipe.y
+          ) {
+            endGame();
+          }
+
+          // Contar los obstáculos que la rana ha pasado
+          if (pipe.x + pipe.width < frog.x && !pipe.passed) {
+            pipe.passed = true;
+            passedPipes++;
+          }
+
+          return pipe.x + pipe.width > 0;
+        });
+
+        // Mostrar la cartica si se pasan 5 obstáculos
+        if (passedPipes >= 1) {
+          showCard();
+        }
+
+        frame++;
+      }
+
+      function endGame() {
+        gameOver = true;
+        document.getElementById("gameOverScreen").style.display = "block";
+      }
+
+      function showCard() {
+        gameOver = true;
+        document.getElementById("gameOverScreen").innerHTML = `
+                <h2 class="text-success">¡Felicidades, Patroncita! 🌸</h2>
+                <p>Quien persevera alcanza. Mira tu sorpresita! ❤️</p>
+                <a href="URL_DE_TU_CARTA_EN_CANVA" target="_blank">
+                <img src="Tortuga.png" alt="Ver cartica" style="width: 200px; cursor: pointer; class="rounded shadow"">
+                </a>
+                <br><br>
+                <p style="color: darkorchid;">¡Dale click a la tortuga!<p>
+            `;
+        document.getElementById("gameOverScreen").style.display = "block";
+      }
+
+      function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        updateGame();
+        drawFrog();
+        drawPipes();
+        requestAnimationFrame(gameLoop);
+      }
+
+      document.addEventListener("keydown", () => (frog.velocity = frog.jump));
+      document.addEventListener(
+        "touchstart",
+        () => (frog.velocity = frog.jump)
+      );
+
+      gameLoop();
+    </script>
+  </body>
+</html>
