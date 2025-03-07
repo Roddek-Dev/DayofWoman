@@ -82,8 +82,8 @@
         y: canvas.height / 2,
         width: 60, // Antes era 30, ahora es el doble
         height: 60, // Antes era 30, ahora es el doble
-        velocity: 0,
-        gravity: 0.5,
+        velocity: -1,
+        gravity: 0.3,
         jump: -10,
       };
 
@@ -139,7 +139,7 @@
         }
 
         // Generar obstáculos cada 90 frames
-        if (frame % 90 === 0) {
+        if (frame % 100 === 0) {
           generarObstaculos();
         }
 
