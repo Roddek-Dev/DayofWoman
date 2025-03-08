@@ -8,6 +8,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     />
+    <link rel="shortcut icon" href="frog.png" type="image/x-icon">
     <style>
       * {
         margin: 0;
@@ -110,7 +111,7 @@
       }
 
       function generarObstaculos() {
-        let pipeWidth = canvas.width * 0.15;
+        let pipeWidth = canvas.width * 0.10;
         let gapSize = canvas.height * 0.3; // Espacio entre obstáculos
 
         let gapPosition = Math.random() * (canvas.height - gapSize - 100) + 50;
@@ -167,7 +168,7 @@
         });
 
         // Mostrar la cartica si se pasan 5 obstáculos
-        if (passedPipes >= 20) {
+        if (passedPipes >= 5) {
           showCard();
         }
 
@@ -184,7 +185,7 @@
         document.getElementById("gameOverScreen").innerHTML = `
                 <h2 class="text-success">¡Felicidades, Patroncita! 🌸</h2>
                 <p>Quien persevera alcanza. Mira tu sorpresita! ❤️</p>
-                <a href="URL_DE_TU_CARTA_EN_CANVA" target="_blank">
+                <a href="https://heyzine.com/flip-book/139716f4a5.html" target="_blank">
                 <img src="Tortuga.png" alt="Ver cartica" style="width: 200px; cursor: pointer; class="rounded shadow"">
                 </a>
                 <br><br>
