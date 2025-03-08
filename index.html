@@ -80,8 +80,8 @@
       const frog = {
         x: 50,
         y: canvas.height / 2,
-        width: 60, // Tamaño sigue igual
-        height: 60,
+        width: 50, // Tamaño sigue igual
+        height: 50,
         velocity: 0.3, // Un poco más lento
         gravity: 0.15, // Caída más suave
         jump: -6, // Antes era -10, ahora salta menos
@@ -111,7 +111,7 @@
 
       function generarObstaculos() {
         let pipeWidth = canvas.width * 0.2;
-        let gapSize = canvas.height * 0.3; // Espacio entre obstáculos
+        let gapSize = canvas.height * 0.4; // Espacio entre obstáculos
 
         let gapPosition = Math.random() * (canvas.height - gapSize - 100) + 50;
 
